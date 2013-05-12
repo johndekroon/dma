@@ -33,6 +33,7 @@ De DM web interface maakt gebruik van het framework CodeIgniter, met als aanvull
 -	Scenario_model
 -	Listener_model
 -	Install_model
+-  
 ##Views
 -	Loginform
 -	Overview
@@ -42,6 +43,7 @@ De DM web interface maakt gebruik van het framework CodeIgniter, met als aanvull
 -	Module overview
 -	Module install
 ##Controllers
+
 -	Auth
 -	Overview
 -	User
@@ -49,20 +51,64 @@ De DM web interface maakt gebruik van het framework CodeIgniter, met als aanvull
 -	Listener
 -	Install
  
+##MoSCoW
+
+###Must
+- Aanmaken scenario's
+- Installeren plug-ins
+- DMA plug-in
+- Log-in / log-out
+- DMA API
+
+###Should
+- fatsoenlijk (multi)user beheer
+- Verschillende plug-ins, waaronder log en mail action
+
+###Could
+- Van de hele server een plug-in voor andere platforms maken
+- Groepen aanmaken
+- Messages sturen naar groepen
+
+###Shouldn't
+- 
+
 #Daemon Master Android app
 De Android app werkt samen met de Action. Het bevat de volgende features:
+
 -	Register on the server by using your credentials
 -	Log out (A.K.A unregister device)
 -	Receive messages in the following flavours: OK, warning and error
 -	Manage messages, example: log OK status, vibarate on warning and vibarate and play audio file on error
 -	Temp. mute specific messages
 -	Mute them all
+
 ##Controllers
 -	Main
+
 ##Models
 -	Message model
 -	Server model
+
 ##Views
 -	Overview
 -	Detail
 -	Log in
+
+##MoSCoW
+
+###Must
+- Inloggen / uitloggen
+- Overview actieve scenario's
+- Berichten muten
+
+###Should
+- Service van maken ipv app
+- Instellen wat er moet gebeuren bij OK, Warning en Error
+- Tijdelijk muten van scenario's
+
+###Could
+- eigen ringtones selecteren voor alarmen
+- Meerdere servers ondersteunen
+
+###Shouldn't
+- App als DMS gebruiken (out of scope)

@@ -7,9 +7,9 @@ Met Daemon Master (DM) wil ik de gewone thuisgebruiker in staat stellen om zijn 
 
 Daemon Master is een framework met modules. Het bestaat uit 3 onderdelen:
 ##System
-Dit is het hart van Daemon Master. Hierin kan bijvoorbeeld een webinterface staan, of een shellscript die het beheer regelt. In ieder geval: datgene dat zorgt voor de koppeling tussen de monitor en de action. In system is een ‘gateway’ die altijd aanwezig moet zijn. Deze statussen van monitors afvangen en ervoor zorgen dat de juiste action getriggerd wordt. Voor nu zal dit een commandline script zijn geschreven in PHP genaamd listener.php. De locatie van listener.php is niet belangrijk, wel is het belangrijk dat deze via de webserver bereikbaar is.  
+Dit is het hart van Daemon Master. Hierin kan bijvoorbeeld een webinterface staan, of een shellscript die het beheer regelt. In ieder geval: datgene dat zorgt voor de koppeling tussen de monitor en de action. In system is een ‘gateway’ die altijd aanwezig moet zijn. Deze statussen van monitors afvangen en ervoor zorgen dat de juiste action getriggerd wordt. Voor nu zal dit een script zijn geschreven in PHP genaamd listener.php. De locatie van listener.php is niet belangrijk, wel is het belangrijk dat deze via de webserver bereikbaar is. Daarnaast is er een Daemon Master Daemon. Dit is een script dat continu draait 
 ##Monitor
-Hierin staan monitors. De toepassingen hiervan zijn vrijwel onbeperkt. Ze kunnen in iedere taal geprogrammeerd worden. De enige voorwaarde is dat een monitors 3 statussen hebben: OK, warning en error en kan communiceren met System. Een monitor luistert dus alleen en doet niets. 
+Hierin staan monitors. De toepassingen hiervan zijn vrijwel onbeperkt. Ze kunnen in iedere taal geprogrammeerd worden. De enige voorwaarde is dat een monitors 3 statussen hebben: OK, warning en error en kan communiceren met System d.m.v. een HTTP POST request. Een monitor communiceert alleen met de server. 
 ##Action
 Actions zijn het tegenovergestelde van monitors: ze doen, maar luisteren niet naar events. Ze worden aangeroepen door system met 3 verschillende aanroepen: OK, warning en alert. Een action is niets anders dan een stuk code dat aangeroepen wordt. 
  

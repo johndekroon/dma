@@ -11,7 +11,8 @@ Dit is het hart van Daemon Master. Hierin kan bijvoorbeeld een webinterface staa
 ##Monitor
 Hierin staan monitors. De toepassingen hiervan zijn vrijwel onbeperkt. Ze kunnen in iedere taal geprogrammeerd worden. De enige voorwaarde is dat een monitors 3 statussen hebben: OK, warning en error en kan communiceren met System d.m.v. een HTTP POST request. Een monitor communiceert alleen met de server. 
 ##Action
-Actions zijn het tegenovergestelde van monitors: ze doen, maar luisteren niet naar events. Ze worden aangeroepen door system met 3 verschillende aanroepen: OK, warning en alert. Een action is niets anders dan een stuk code dat aangeroepen wordt. 
+Actions zijn het tegenovergestelde van monitors: ze doen, maar luisteren niet naar events. Ze worden aangeroepen door system met 3 verschillende aanroepen: OK, warning en alert. Een action is niets anders dan een stuk code dat aangeroepen wordt. Een typische aanroep (zonder extra parameters) ziet er als volgt uit:
+./action.sh --status "ok" --module "temperature" --message "Temperture is 23 C"
  
 #Het project
 In de inleiding heb ik vooral het concept uitgelegd. Wat er opgeleverd gaat worden is een implementatie van het bovenstaande model. Schematisch zal dit het volgende zijn:

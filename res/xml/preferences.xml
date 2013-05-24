@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Device Settings" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="muteAll"
+            android:summary="Mute all messages"
+            android:title="Mute all" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Server Settings" >
+        <EditTextPreference
+    		android:key="user"
+    		android:title="Username"
+   			android:summary="Your Daemon Master username"   
+    		android:inputType="text" />
+        <EditTextPreference
+    		android:key="pass"
+    		android:title="Password"
+   			android:summary="Your Daemon Master password"   
+    		android:inputType="textPassword" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:key="server"
+            android:summary="E.g. http://daemonmaster.example.com/server"
+            android:title="Server address" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:key="sid"
+            android:summary="The sender ID of your GCM project"
+            android:title="Sender ID" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

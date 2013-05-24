@@ -2,6 +2,8 @@ package nl.johndekroon.dma;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 /**
  * Helper class providing methods and constants common to other classes in the
@@ -9,10 +11,11 @@ import android.content.Intent;
  */
 public final class CommonUtilities {
 
+	//SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     /**
      * Base URL of the Demo Server (such as http://my_host:8080/gcm-demo)
      */
-    static final String SERVER_URL = "daemonmaster.johndekroon.nl/index.php/gcm/server";
+    static final String SERVER_URL = "http://daemonmaster.johndekroon.nl/index.php/gcm/server";
 
     /**
      * Google API project id registered to use GCM.
@@ -27,8 +30,7 @@ public final class CommonUtilities {
     /**
      * Intent used to display a message in the screen.
      */
-    static final String DISPLAY_MESSAGE_ACTION =
-            "com.google.android.gcm.demo.app.DISPLAY_MESSAGE";
+    static final String DISPLAY_MESSAGE_ACTION = "nl.johndekroon.dma.DISPLAY_MESSAGE";
 
     /**
      * Intent's extra that contains the message to be displayed.

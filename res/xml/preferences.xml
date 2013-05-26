@@ -27,6 +27,7 @@
         <EditTextPreference
             android:defaultValue=""
             android:key="sid"
+            android:inputType="number"
             android:summary="The sender ID of your GCM project"
             android:title="Sender ID" />
     </PreferenceCategory>

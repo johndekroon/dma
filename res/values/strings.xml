@@ -5,6 +5,7 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="error_config">Please set the %1$s constant and recompile the app.</string>
+    <string name="error_setting">Please set your server settings correct.</string>
     <string name="already_registered">Device is already registered on server.</string>
     <string name="gcm_registered">From GCM: device successfully registered!</string>
     <string name="gcm_unregistered">From GCM: device successfully unregistered!</string>
@@ -23,6 +24,8 @@
     <string name="options_exit">Exit</string>
     <string name="options_mute_all">Mute all messages</string>
     <string name="options_preferences">Preferences</string>
+    <string name="headings_home">Welcome to the Daemon</string>
+    <string name="console">Console: \n</string>
     
 
 </resources>

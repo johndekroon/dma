@@ -11,7 +11,6 @@ import android.preference.PreferenceManager;
  */
 public final class CommonUtilities {
 
-	//SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     /**
      * Base URL of the Demo Server (such as http://my_host:8080/gcm-demo)
      */

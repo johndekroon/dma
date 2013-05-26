@@ -23,6 +23,7 @@ import com.google.android.gcm.GCMRegistrar;
 import nl.johndekroon.dma.R;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.io.IOException;
@@ -51,7 +52,7 @@ public final class ServerUtilities {
      * @return whether the registration succeeded or not.
      */
     static boolean register(final Context context, final String regId) {
-        Log.i(TAG, "registering device (regId = " + regId + ")");
+    	Log.i(TAG, "registering device (regId = " + regId + ")");
         String serverUrl = SERVER_URL + "/register";
         Map<String, String> params = new HashMap<String, String>();
         params.put("regId", regId);

@@ -76,9 +76,6 @@ public class DemoActivity extends Activity {
             case 2:
                 GCMRegistrar.unregister(this);
                 return true;
-            case R.id.options_clear:
-                mDisplay.setText(null);
-                return true;
             case R.id.options_exit:
                 finish();
                 return true;

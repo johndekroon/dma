@@ -23,7 +23,6 @@ import com.google.android.gcm.GCMRegistrar;
 import nl.johndekroon.dma.R;
 
 import android.content.Context;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.io.IOException;

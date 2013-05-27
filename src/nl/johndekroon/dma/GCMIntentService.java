@@ -34,7 +34,6 @@ import nl.johndekroon.dma.R;
  */
 public class GCMIntentService extends GCMBaseIntentService {
 
-    @SuppressWarnings("hiding")
     private static final String TAG = "GCMIntentService";
 
     public GCMIntentService() {
@@ -63,8 +62,10 @@ public class GCMIntentService extends GCMBaseIntentService {
 
     @Override
     protected void onMessage(Context context, Intent intent) {
-        Log.i(TAG, "Received message");
-        String message = getString(R.string.gcm_message);
+    	
+        System.out.println(intent.getStringExtra("message"));
+    	Log.i(TAG, "Received message");
+        String message = "Message: "+intent.getStringExtra("message");
         displayMessage(context, message);
         // notifies user
         generateNotification(context, message);

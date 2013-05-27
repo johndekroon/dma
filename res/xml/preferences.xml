@@ -29,12 +29,6 @@
             android:key="server"
             android:summary="E.g. http://daemonmaster.example.com/server"
             android:title="Server address" />
-        <EditTextPreference
-            android:defaultValue=""
-            android:key="sid"
-            android:inputType="number"
-            android:summary="The sender ID of your GCM project"
-            android:title="Sender ID" />
     </PreferenceCategory>
 
 </PreferenceScreen>

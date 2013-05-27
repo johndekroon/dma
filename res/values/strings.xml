@@ -26,6 +26,9 @@
     <string name="options_preferences">Preferences</string>
     <string name="headings_home">Welcome to the Daemon</string>
     <string name="console">Console: \n</string>
+    <string name="login_username">Username</string>
+    
+    <string name="login_password">Password</string>
     
 
 </resources>

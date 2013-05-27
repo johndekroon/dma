@@ -6,6 +6,7 @@ import static nl.johndekroon.dma.CommonUtilities.SENDER_ID;
 import static nl.johndekroon.dma.CommonUtilities.SERVER_URL;
 
 import nl.johndekroon.dma.Preferences;
+
 import com.google.android.gcm.GCMRegistrar;
 import nl.johndekroon.dma.R;
 
@@ -22,17 +23,16 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
-/**
- * Main UI for the demo app.
- */
 public class DemoActivity extends Activity {
 	
 	private SharedPreferences prefs;
     TextView mDisplay;
     AsyncTask<Void, Void, Void> mRegisterTask;
-
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,24 +43,34 @@ public class DemoActivity extends Activity {
         
         GCMRegistrar.checkDevice(this);
         GCMRegistrar.checkManifest(this);
-        
-        setContentView(R.layout.activity_main);
-        mDisplay = (TextView) findViewById(R.id.display);
-        
+        prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        if(prefs.getString("user", "") =="" || prefs.getString("pass", "")=="" ||prefs.getString("server", "")=="")
+        {
+        	setContentView(R.layout.login);
+        }
+        else
+        {
+        	setContentView(R.layout.activity_main);
+            mDisplay = (TextView) findViewById(R.id.display);
+            TextView textView = (TextView)findViewById(R.id.display);
+            textView.setMovementMethod(ScrollingMovementMethod.getInstance());
+        }
         registerReceiver(mHandleMessageReceiver,
                 new IntentFilter(DISPLAY_MESSAGE_ACTION));
-        TextView textView = (TextView)findViewById(R.id.display);
-        textView.setMovementMethod(ScrollingMovementMethod.getInstance());
     }
-
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.clear();
-        if(GCMRegistrar.getRegistrationId(this)=="") {
-        	menu.add(0, 1, Menu.NONE, "Register");
-        } else {
-        	menu.add(0, 2, Menu.NONE, "Unregister");
-        }
+        prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        //if(prefs.getString("user", "") !="" && prefs.getString("pass", "")!="")
+        //{
+    	    if(GCMRegistrar.getRegistrationId(this)=="") {
+    	    	menu.add(0, 1, Menu.NONE, "Login");
+    	    } else {
+    	    	menu.add(0, 2, Menu.NONE, "Logout");
+    	    }
+        //}
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_menu, menu);
         return true;
@@ -74,7 +84,7 @@ public class DemoActivity extends Activity {
                 registerDevice();
                 return true;
             case 2:
-                GCMRegistrar.unregister(this);
+                doLogout();
                 return true;
             case R.id.options_exit:
                 finish();
@@ -113,18 +123,37 @@ public class DemoActivity extends Activity {
             mDisplay.append(newMessage + "\n");
         }
     };
-    
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-    menu.clear();
-    if(GCMRegistrar.getRegistrationId(this)=="") {
-    	menu.add(0, 1, Menu.NONE, "Register");
-    } else {
-    	menu.add(0, 2, Menu.NONE, "Unregister");
+        
+    public void doLogin(View view)
+    {
+    	EditText userEditText = (EditText)findViewById(R.id.editText1);
+    	EditText passEditText = (EditText)findViewById(R.id.editText2);
+    	String username = userEditText.getText().toString();
+    	String password = passEditText.getText().toString();
+    	
+    	prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        SharedPreferences.Editor prefEditor = prefs.edit();
+        prefEditor.putString("user", username);
+        prefEditor.putString("pass", password);
+        prefEditor.commit();
+        
+        setContentView(R.layout.activity_main);
+        mDisplay = (TextView) findViewById(R.id.display);
+        TextView textView = (TextView)findViewById(R.id.display);
+        textView.setMovementMethod(ScrollingMovementMethod.getInstance());
+    	
+    	registerDevice();
     }
-    MenuInflater inflater = getMenuInflater();
-    inflater.inflate(R.menu.options_menu, menu);
-    return super.onPrepareOptionsMenu(menu);
+    
+    public void doLogout()
+    {
+    	prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        SharedPreferences.Editor prefEditor = prefs.edit();
+        prefEditor.putString("user", "");
+        prefEditor.putString("pass", "");
+        prefEditor.commit();
+    	GCMRegistrar.unregister(this);
+    	setContentView(R.layout.login);
     }
     
     public void registerDevice()
@@ -132,15 +161,8 @@ public class DemoActivity extends Activity {
     	prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     	final String regId = GCMRegistrar.getRegistrationId(this);
     	
-    	if(prefs.getString("sid", "")=="")
-    	{
-    		mDisplay.append(getString(R.string.error_setting) + "\n");
-    	}
-    	else
-    	{
 	        if (regId.equals("")) {
-	            // Automatically registers application on startup.
-	            GCMRegistrar.register(this, prefs.getString("sid", ""));
+	            GCMRegistrar.register(this, SENDER_ID);
 	        } else {
 	            // Device is already registered on GCM, check server.
 	            if (GCMRegistrar.isRegisteredOnServer(this)) {
@@ -148,8 +170,6 @@ public class DemoActivity extends Activity {
 	                mDisplay.append(getString(R.string.already_registered) + "\n");
 	            } else {
 	                // Try to register again, but not in the UI thread.
-	                // It's also necessary to cancel the thread onDestroy(),
-	                // hence the use of AsyncTask instead of a raw thread.
 	                final Context context = this;
 	                mRegisterTask = new AsyncTask<Void, Void, Void>() {
 	
@@ -157,12 +177,6 @@ public class DemoActivity extends Activity {
 	                    protected Void doInBackground(Void... params) {
 	                        boolean registered =
 	                               ServerUtilities.register(context, regId);
-	                        // At this point all attempts to register with the app
-	                        // server failed, so we need to unregister the device
-	                        // from GCM - the app will try to register again when
-	                        // it is restarted. Note that GCM will send an
-	                        // unregistered callback upon completion, but
-	                        // GCMIntentService.onUnregistered() will ignore it.
 	                        if (!registered) {
 	                            GCMRegistrar.unregister(context);
 	                        }
@@ -177,7 +191,6 @@ public class DemoActivity extends Activity {
 	                mRegisterTask.execute(null, null, null);
 	            }
 	        }
-    	}
     }
 
 }

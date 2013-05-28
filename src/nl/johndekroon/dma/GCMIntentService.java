@@ -18,11 +18,20 @@ package nl.johndekroon.dma;
 import static nl.johndekroon.dma.CommonUtilities.SENDER_ID;
 import static nl.johndekroon.dma.CommonUtilities.displayMessage;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.android.gcm.GCMBaseIntentService;
@@ -33,7 +42,7 @@ import nl.johndekroon.dma.R;
  * IntentService responsible for handling GCM messages.
  */
 public class GCMIntentService extends GCMBaseIntentService {
-
+	private SharedPreferences prefs;
     private static final String TAG = "GCMIntentService";
 
     public GCMIntentService() {
@@ -42,9 +51,10 @@ public class GCMIntentService extends GCMBaseIntentService {
 
     @Override
     protected void onRegistered(Context context, String registrationId) {
+    	prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         Log.i(TAG, "Device registered: regId = " + registrationId);
         displayMessage(context, getString(R.string.gcm_registered));
-        ServerUtilities.register(context, registrationId);
+        ServerUtilities.register(context, registrationId, prefs.getString("user", ""), prefs.getString("pass", ""));
     }
 
     @Override
@@ -62,13 +72,72 @@ public class GCMIntentService extends GCMBaseIntentService {
 
     @Override
     protected void onMessage(Context context, Intent intent) {
-    	
-        System.out.println(intent.getStringExtra("message"));
-    	Log.i(TAG, "Received message");
-        String message = "Message: "+intent.getStringExtra("message");
-        displayMessage(context, message);
-        // notifies user
-        generateNotification(context, message);
+    	prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+    	prefs.getBoolean("muteAll", false);
+    	String data = intent.getStringExtra("message");
+    	JSONObject datajson;
+		try {
+			datajson = new JSONObject(data);
+			String message= datajson.get("message").toString();  
+			String type= datajson.get("type").toString();
+			String scenarioList = datajson.get("list").toString();
+			if(scenarioList != null)
+			{
+				SharedPreferences.Editor prefEditor = prefs.edit();
+		        prefEditor.putString("scenarioList", scenarioList);
+		        prefEditor.commit();				
+			}
+			System.out.println("type = "+type);
+	    	if(type.equals("WARN")||type.equals("OK"))
+	    	{
+	    		if(prefs.getBoolean("muteAll", false) != true)
+	    		{	
+		    		Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+		    		long[] pattern = {0, 500, 200, 200};
+		    			 
+		    			// Only perform this pattern one time (-1 means "do not repeat")
+		    			v.vibrate(pattern, -1);
+		    		
+			    		Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+		    	         if(alert == null){  // I can't see this ever being null (as always have a default notification) but just incase
+		    	             // alert backup is null, using 2nd backup
+		    	             alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);               
+		    	         }
+		    	         Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), alert);
+		    	         r.play();
+	    		}
+	    	}
+	    	
+	    	if(type.equals("ERR"))
+	    	{
+    			System.out.println("bbbrrrrrrr brrrrrr");
+	    		Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+	    		long[] pattern = {0, 1000, 50, 200, 50, 200, 50, 1200};
+	    			 
+	    			// Only perform this pattern one time (-1 means "do not repeat")
+	    			v.vibrate(pattern, -1);
+	    			
+	    		if(prefs.getBoolean("muteAll", false) != true)
+	    		{	
+		    		Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+		    	         if(alert == null){  // I can't see this ever being null (as always have a default notification) but just incase
+		    	             // alert backup is null, using 2nd backup
+		    	             alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);               
+		    	         }	
+		    	         Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), alert);
+		    	         r.play();     
+	    		}
+	    	}
+	        System.out.println(intent.getStringExtra("message"));
+	    	Log.i(TAG, "Received message");
+	        
+	        displayMessage(context, message);
+	        // notifies user
+	        generateNotification(context, message);
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
     }
 
     @Override

@@ -50,13 +50,13 @@ public final class ServerUtilities {
      *
      * @return whether the registration succeeded or not.
      */
-    static boolean register(final Context context, final String regId) {
+    static boolean register(final Context context, final String regId, final String user, final String pass) {
     	Log.i(TAG, "registering device (regId = " + regId + ")");
         String serverUrl = SERVER_URL + "/register";
         Map<String, String> params = new HashMap<String, String>();
         params.put("regId", regId);
-        //params.put("username", arg1);
-      //params.put("password", arg1);
+        params.put("username", user);
+        params.put("password", pass);
         long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
         // Once GCM returns a registration id, we need to register it in the
         // demo server. As the server might be down, we will retry it a couple

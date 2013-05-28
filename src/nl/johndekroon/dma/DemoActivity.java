@@ -176,7 +176,7 @@ public class DemoActivity extends Activity {
 	                    @Override
 	                    protected Void doInBackground(Void... params) {
 	                        boolean registered =
-	                               ServerUtilities.register(context, regId);
+	                               ServerUtilities.register(context, regId, prefs.getString("user", ""), prefs.getString("pass", ""));
 	                        if (!registered) {
 	                            GCMRegistrar.unregister(context);
 	                        }

@@ -18,6 +18,10 @@ package nl.johndekroon.dma;
 import static nl.johndekroon.dma.CommonUtilities.SENDER_ID;
 import static nl.johndekroon.dma.CommonUtilities.displayMessage;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,6 +41,7 @@ import android.util.Log;
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
 import nl.johndekroon.dma.R;
+import nl.johndekroon.dma.DemoActivity;
 
 /**
  * IntentService responsible for handling GCM messages.
@@ -72,6 +77,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 
     @Override
     protected void onMessage(Context context, Intent intent) {
+    	System.out.println("Got a message.");
     	prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     	prefs.getBoolean("muteAll", false);
     	String data = intent.getStringExtra("message");
@@ -80,15 +86,9 @@ public class GCMIntentService extends GCMBaseIntentService {
 			datajson = new JSONObject(data);
 			String message= datajson.get("message").toString();  
 			String type= datajson.get("type").toString();
-			String scenarioList = datajson.get("list").toString();
-			if(scenarioList != null)
-			{
-				SharedPreferences.Editor prefEditor = prefs.edit();
-		        prefEditor.putString("scenarioList", scenarioList);
-		        prefEditor.commit();				
-			}
+
 			System.out.println("type = "+type);
-	    	if(type.equals("WARN")||type.equals("OK"))
+	    	if(type.equals("WARNING")||type.equals("OK"))
 	    	{
 	    		if(prefs.getBoolean("muteAll", false) != true)
 	    		{	
@@ -106,11 +106,12 @@ public class GCMIntentService extends GCMBaseIntentService {
 		    	         Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), alert);
 		    	         r.play();
 	    		}
+	    		generateNotification(context, message);
 	    	}
 	    	
-	    	if(type.equals("ERR"))
+	    	else if(type.equals("ERROR"))
 	    	{
-    			System.out.println("bbbrrrrrrr brrrrrr");
+	    		System.out.println("bbbrrrrrrr brrrrrr");
 	    		Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 	    		long[] pattern = {0, 1000, 50, 200, 50, 200, 50, 1200};
 	    			 
@@ -120,20 +121,46 @@ public class GCMIntentService extends GCMBaseIntentService {
 	    		if(prefs.getBoolean("muteAll", false) != true)
 	    		{	
 		    		Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-		    	         if(alert == null){  // I can't see this ever being null (as always have a default notification) but just incase
-		    	             // alert backup is null, using 2nd backup
+		    	         if(alert == null){  
 		    	             alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);               
 		    	         }	
 		    	         Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), alert);
 		    	         r.play();     
 	    		}
+	    		generateNotification(context, message);
+	    	}
+	    	else if(type.equals("register"))
+	    	{
+
+	    		
+	            SharedPreferences.Editor prefEditor = prefs.edit();
+	            prefEditor.putString("user", "");
+	            prefEditor.putString("pass", "");
+	            prefEditor.commit();
+	            
+	    		//Retrieve the values
+	    		Set<String> set = new HashSet<String>();
+				set = ((SharedPreferences) prefEditor).getStringSet("monitors", null);
+
+	    		//Set the values
+
+	    		set.
+	    		prefEditor.putStringSet("monitors", set);
+	    		prefEditor.commit();
 	    	}
 	        System.out.println(intent.getStringExtra("message"));
 	    	Log.i(TAG, "Received message");
-	        
-	        displayMessage(context, message);
-	        // notifies user
-	        generateNotification(context, message);
+	    	
+	    	//No idea why this part isn't working. It should.
+	    	
+//	        if(type.equals("ERROR"))
+//	        {
+//	        	displayMessage(context, message, "error");
+//	        }
+//	        else
+//	        {
+	        	displayMessage(context, message);
+//	        }
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -171,15 +198,15 @@ public class GCMIntentService extends GCMBaseIntentService {
         int icon = R.drawable.ic_stat_gcm;
         long when = System.currentTimeMillis();
         NotificationManager notificationManager = (NotificationManager)
-                context.getSystemService(Context.NOTIFICATION_SERVICE);
+        context.getSystemService(Context.NOTIFICATION_SERVICE);
         Notification notification = new Notification(icon, message, when);
         String title = context.getString(R.string.app_name);
         Intent notificationIntent = new Intent(context, DemoActivity.class);
         // set intent so it does not start a new activity
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent intent =
-                PendingIntent.getActivity(context, 0, notificationIntent, 0);
+        PendingIntent.getActivity(context, 0, notificationIntent, 0);
         notification.setLatestEventInfo(context, title, message, intent);
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
         notificationManager.notify(0, notification);

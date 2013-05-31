@@ -30,11 +30,18 @@ public final class CommonUtilities {
      * Intent used to display a message in the screen.
      */
     static final String DISPLAY_MESSAGE_ACTION = "nl.johndekroon.dma.DISPLAY_MESSAGE";
+    
+    /**
+     * Intent used to display a message in the screen.
+     */
+    static final String DISPLAY_VIEW = "nl.johndekroon.dma.DISPLAY_VIEW";
 
     /**
      * Intent's extra that contains the message to be displayed.
      */
     static final String EXTRA_MESSAGE = "message";
+    
+    static final String EXTRA_VIEW = "";
 
     /**
      * Notifies UI to display a message.
@@ -45,9 +52,15 @@ public final class CommonUtilities {
      * @param context application's context.
      * @param message message to be displayed.
      */
-    static void displayMessage(Context context, String message) {
-        Intent intent = new Intent(DISPLAY_MESSAGE_ACTION);
+    static void displayMessage(Context context, String message, String... view) {
+    	
+    	Intent intent = new Intent(DISPLAY_MESSAGE_ACTION);
         intent.putExtra(EXTRA_MESSAGE, message);
+        if(view != null && view.length > 0)
+        {
+        	intent.putExtra(EXTRA_VIEW, view.toString());
+        	System.out.println("View isset");
+        }
         context.sendBroadcast(intent);
     }
 }

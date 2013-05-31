@@ -2,6 +2,7 @@ package nl.johndekroon.dma;
 
 import static nl.johndekroon.dma.CommonUtilities.DISPLAY_MESSAGE_ACTION;
 import static nl.johndekroon.dma.CommonUtilities.EXTRA_MESSAGE;
+import static nl.johndekroon.dma.CommonUtilities.EXTRA_VIEW;
 import static nl.johndekroon.dma.CommonUtilities.SENDER_ID;
 import static nl.johndekroon.dma.CommonUtilities.SERVER_URL;
 
@@ -44,9 +45,10 @@ public class DemoActivity extends Activity {
         GCMRegistrar.checkDevice(this);
         GCMRegistrar.checkManifest(this);
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        if(prefs.getString("user", "") =="" || prefs.getString("pass", "")=="" ||prefs.getString("server", "")=="")
-        {
-        	setContentView(R.layout.login);
+    	final String regId = GCMRegistrar.getRegistrationId(this);
+    	
+        if (regId.equals("")) {
+	        	setContentView(R.layout.login);
         }
         else
         {
@@ -63,14 +65,14 @@ public class DemoActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.clear();
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        //if(prefs.getString("user", "") !="" && prefs.getString("pass", "")!="")
-        //{
+        if(prefs.getString("user", "") !="" && prefs.getString("pass", "")!="")
+        {
     	    if(GCMRegistrar.getRegistrationId(this)=="") {
     	    	menu.add(0, 1, Menu.NONE, "Login");
     	    } else {
     	    	menu.add(0, 2, Menu.NONE, "Logout");
     	    }
-        //}
+        }
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_menu, menu);
         return true;
@@ -119,7 +121,20 @@ public class DemoActivity extends Activity {
             new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+        	String newView = intent.getExtras().getString(EXTRA_VIEW);
             String newMessage = intent.getExtras().getString(EXTRA_MESSAGE);
+            
+                if(newView != null)
+                {
+                	System.out.println("newView isset");
+                	System.out.println(newView.toString());
+                	if(newView.equals("error"))
+                	{
+                		System.out.println("newView isset");
+                		setContentView(R.layout.error);
+                	}
+                }
+              
             mDisplay.append(newMessage + "\n");
         }
     };
@@ -192,5 +207,4 @@ public class DemoActivity extends Activity {
 	            }
 	        }
     }
-
 }

@@ -6,6 +6,9 @@ import static nl.johndekroon.dma.CommonUtilities.EXTRA_VIEW;
 import static nl.johndekroon.dma.CommonUtilities.SENDER_ID;
 import static nl.johndekroon.dma.CommonUtilities.SERVER_URL;
 
+import java.util.List;
+import java.util.Random;
+
 import nl.johndekroon.dma.Preferences;
 
 import com.google.android.gcm.GCMRegistrar;
@@ -25,10 +28,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class DemoActivity extends Activity {
+public class DemoActivity extends Activity  {
 	
 	private SharedPreferences prefs;
     TextView mDisplay;
@@ -52,6 +56,18 @@ public class DemoActivity extends Activity {
         }
         else
         {
+        	Database_DAO datasource = new Database_DAO(this);
+            datasource.open();
+
+            List<Scenario> values = datasource.getAllComments();
+
+            // Use the SimpleCursorAdapter to show the
+            // elements in a ListView
+            ArrayAdapter<Scenario> adapter = new ArrayAdapter<Scenario>(this,
+                android.R.layout.simple_list_item_1, values);
+           // setListAdapter(adapter);
+        	
+        	
         	setContentView(R.layout.activity_main);
             mDisplay = (TextView) findViewById(R.id.display);
             TextView textView = (TextView)findViewById(R.id.display);
@@ -99,6 +115,29 @@ public class DemoActivity extends Activity {
                 return super.onOptionsItemSelected(item);
         }
     }
+    
+    public void onClick(View view) {
+        @SuppressWarnings("unchecked")
+        ArrayAdapter<Scenario> adapter = (ArrayAdapter<Scenario>) getListAdapter();
+        Scenario comment = null;
+        switch (view.getId()) {
+        case R.id.add:
+          String[] comments = new String[] { "Cool", "Very nice", "Hate it" };
+          int nextInt = new Random().nextInt(3);
+          // Save the new comment to the database
+          comment = Database_DAO.createScenario(comments[nextInt]);
+          adapter.add(comment);
+          break;
+        case R.id.delete:
+          if (getListAdapter().getCount() > 0) {
+            comment = (Scenario) getListAdapter().getItem(0);
+            datasource.deleteComment(comment);
+            adapter.remove(comment);
+          }
+          break;
+        }
+        adapter.notifyDataSetChanged();
+      }
 
     @Override
     protected void onDestroy() {

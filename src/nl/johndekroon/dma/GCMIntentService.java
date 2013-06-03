@@ -138,15 +138,14 @@ public class GCMIntentService extends GCMBaseIntentService {
 	            prefEditor.putString("pass", "");
 	            prefEditor.commit();
 	            
-	    		//Retrieve the values
-	    		Set<String> set = new HashSet<String>();
-				set = ((SharedPreferences) prefEditor).getStringSet("monitors", null);
-
-	    		//Set the values
-
-	    		set.
-	    		prefEditor.putStringSet("monitors", set);
-	    		prefEditor.commit();
+//	    		//Retrieve the values
+//	    		Set<String> set = new HashSet<String>();
+//				set = ((SharedPreferences) prefEditor).getStringSet("monitors", null);
+//
+//	    		//Set the values
+//
+//	    		set.prefEditor.putStringSet("monitors", set);
+//	    		prefEditor.commit();
 	    	}
 	        System.out.println(intent.getStringExtra("message"));
 	    	Log.i(TAG, "Received message");

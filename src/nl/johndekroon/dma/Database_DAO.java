@@ -11,7 +11,10 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
+import nl.johndekroon.dma.Database_helper;
+
 public class Database_DAO {
+	
 
 	 // Database fields
 	  private SQLiteDatabase database;
@@ -31,42 +34,34 @@ public class Database_DAO {
 		    dbHelper.close();
 	  }
 	  
-	  public Scenario createScenario(String name) {
-		    ContentValues values = new ContentValues();
-		    values.put(Database_helper.COLUMN_NAME, name);
-		    long insertId = database.insert(Database_helper.TABLE_SCENARIOS, null,
-		        values);
-		    Cursor cursor = database.query(Database_helper.TABLE_SCENARIOS,
-		        allColumns, Database_helper.COLUMN_ID + " = " + insertId, null,
-		        null, null, null);
-		    cursor.moveToFirst();
-		    Scenario newScenario = cursorToScenario(cursor);
-		    cursor.close();
-		    return newScenario;
+	  public void createScenario(String newName) {
+		  	open();
+			
+			ContentValues initialValues = new ContentValues();
+			initialValues.put("name", newName);
+			initialValues.put("mute", 0);
+			database.insert("scenarios", null, initialValues);
+			close();
 		  }
 	  
-	  public void deleteScenario(Scenario toDelete) {
-		    long id = toDelete.getId();
-		    System.out.println("Comment deleted with id: " + id);
-		    database.delete(Database_helper.TABLE_SCENARIOS, Database_helper.COLUMN_ID
-		        + " = " + id, null);
-		  }
-
-		  public List<Scenario> getAllComments() {
-		    List<Scenario> comments = new ArrayList<Scenario>();
-
-		    Cursor cursor = database.query(Database_helper.TABLE_SCENARIOS,
-		        allColumns, null, null, null, null, null);
-
-		    cursor.moveToFirst();
-		    while (!cursor.isAfterLast()) {
-		    	Scenario scenario = cursorToScenario(cursor);
-		    	scenario.add(scenario);
-		      cursor.moveToNext();
-		    }
-		    // Make sure to close the cursor
-		    cursor.close();
-		    return comments;
+		public ArrayList<String> getAllScenarios() {
+			open();
+			ArrayList<String> scenarioList = new ArrayList<String>();
+			String rawQuery = "SELECT * FROM scenarios";
+			Cursor cursor = database.rawQuery(rawQuery, null);
+			cursor.moveToFirst();
+			while (!cursor.isAfterLast()) {
+				scenarioList.add(cursor.getString(1));
+				cursor.moveToNext();
+			}
+			close();
+			return scenarioList;
+		}
+	  
+	  public void deleteScenario() {
+		  open();
+		  database.execSQL(" DELETE FROM scenarios");
+		  close();
 		  }
 
 		  private Scenario cursorToScenario(Cursor cursor) {

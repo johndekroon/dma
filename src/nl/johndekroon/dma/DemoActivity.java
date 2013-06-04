@@ -6,10 +6,13 @@ import static nl.johndekroon.dma.CommonUtilities.EXTRA_VIEW;
 import static nl.johndekroon.dma.CommonUtilities.SENDER_ID;
 import static nl.johndekroon.dma.CommonUtilities.SERVER_URL;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 import nl.johndekroon.dma.Preferences;
+import nl.johndekroon.dma.Database_DAO;
 
 import com.google.android.gcm.GCMRegistrar;
 import nl.johndekroon.dma.R;
@@ -30,6 +33,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class DemoActivity extends Activity  {
@@ -41,7 +45,7 @@ public class DemoActivity extends Activity  {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+        ArrayAdapter<String> listAdapter ;  
         // Make sure the device has the proper dependencies
         checkNotNull(SERVER_URL, "SERVER_URL");
         checkNotNull(SENDER_ID, "SENDER_ID");
@@ -56,22 +60,31 @@ public class DemoActivity extends Activity  {
         }
         else
         {
+   
         	Database_DAO datasource = new Database_DAO(this);
             datasource.open();
 
-            List<Scenario> values = datasource.getAllComments();
-
-            // Use the SimpleCursorAdapter to show the
-            // elements in a ListView
-            ArrayAdapter<Scenario> adapter = new ArrayAdapter<Scenario>(this,
-                android.R.layout.simple_list_item_1, values);
-           // setListAdapter(adapter);
-        	
-        	
+            List<String> values = datasource.getAllScenarios();
+            String[] strarray = values.toArray(new String[0]);
+            
         	setContentView(R.layout.activity_main);
             mDisplay = (TextView) findViewById(R.id.display);
             TextView textView = (TextView)findViewById(R.id.display);
             textView.setMovementMethod(ScrollingMovementMethod.getInstance());
+        	
+        	ListView mainListView = (ListView) findViewById( R.id.list );
+
+			ArrayList<String> planetList = new ArrayList<String>();  
+			planetList.addAll( Arrays.asList(strarray) );  
+			
+			// Create ArrayAdapter using the planet list.  
+			listAdapter = new ArrayAdapter<String>(this, R.layout.simplerow, planetList);  
+
+
+				// Set the ArrayAdapter as the ListView's adapter.  
+			mainListView.setAdapter( listAdapter );      
+        	
+        	
         }
         registerReceiver(mHandleMessageReceiver,
                 new IntentFilter(DISPLAY_MESSAGE_ACTION));
@@ -117,26 +130,21 @@ public class DemoActivity extends Activity  {
     }
     
     public void onClick(View view) {
-        @SuppressWarnings("unchecked")
-        ArrayAdapter<Scenario> adapter = (ArrayAdapter<Scenario>) getListAdapter();
-        Scenario comment = null;
+    	Database_DAO datasource = new Database_DAO(this);
+        datasource.open();
+
+        List<String> values = datasource.getAllScenarios();
+
         switch (view.getId()) {
         case R.id.add:
-          String[] comments = new String[] { "Cool", "Very nice", "Hate it" };
-          int nextInt = new Random().nextInt(3);
-          // Save the new comment to the database
-          comment = Database_DAO.createScenario(comments[nextInt]);
-          adapter.add(comment);
+        	datasource.createScenario("bla");
+        	System.out.println(values);
           break;
         case R.id.delete:
-          if (getListAdapter().getCount() > 0) {
-            comment = (Scenario) getListAdapter().getItem(0);
-            datasource.deleteComment(comment);
-            adapter.remove(comment);
-          }
+        	datasource.deleteScenario();
           break;
         }
-        adapter.notifyDataSetChanged();
+
       }
 
     @Override

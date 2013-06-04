@@ -9,7 +9,6 @@ import static nl.johndekroon.dma.CommonUtilities.SERVER_URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 import nl.johndekroon.dma.Preferences;
 import nl.johndekroon.dma.Database_DAO;
@@ -39,13 +38,14 @@ import android.widget.TextView;
 public class DemoActivity extends Activity  {
 	
 	private SharedPreferences prefs;
+	public ArrayAdapter<String> listAdapter;
     TextView mDisplay;
     AsyncTask<Void, Void, Void> mRegisterTask;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ArrayAdapter<String> listAdapter ;  
+          
         // Make sure the device has the proper dependencies
         checkNotNull(SERVER_URL, "SERVER_URL");
         checkNotNull(SENDER_ID, "SENDER_ID");
@@ -54,37 +54,17 @@ public class DemoActivity extends Activity  {
         GCMRegistrar.checkManifest(this);
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     	final String regId = GCMRegistrar.getRegistrationId(this);
-    	
+
         if (regId.equals("")) {
 	        	setContentView(R.layout.login);
         }
         else
         {
-   
-        	Database_DAO datasource = new Database_DAO(this);
-            datasource.open();
-
-            List<String> values = datasource.getAllScenarios();
-            String[] strarray = values.toArray(new String[0]);
-            
         	setContentView(R.layout.activity_main);
             mDisplay = (TextView) findViewById(R.id.display);
             TextView textView = (TextView)findViewById(R.id.display);
             textView.setMovementMethod(ScrollingMovementMethod.getInstance());
-        	
-        	ListView mainListView = (ListView) findViewById( R.id.list );
-
-			ArrayList<String> planetList = new ArrayList<String>();  
-			planetList.addAll( Arrays.asList(strarray) );  
-			
-			// Create ArrayAdapter using the planet list.  
-			listAdapter = new ArrayAdapter<String>(this, R.layout.simplerow, planetList);  
-
-
-				// Set the ArrayAdapter as the ListView's adapter.  
-			mainListView.setAdapter( listAdapter );      
-        	
-        	
+        	refreshList();
         }
         registerReceiver(mHandleMessageReceiver,
                 new IntentFilter(DISPLAY_MESSAGE_ACTION));
@@ -94,14 +74,11 @@ public class DemoActivity extends Activity  {
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.clear();
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        if(prefs.getString("user", "") !="" && prefs.getString("pass", "")!="")
-        {
     	    if(GCMRegistrar.getRegistrationId(this)=="") {
     	    	menu.add(0, 1, Menu.NONE, "Login");
     	    } else {
     	    	menu.add(0, 2, Menu.NONE, "Logout");
     	    }
-        }
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_menu, menu);
         return true;
@@ -129,23 +106,24 @@ public class DemoActivity extends Activity  {
         }
     }
     
-    public void onClick(View view) {
-    	Database_DAO datasource = new Database_DAO(this);
-        datasource.open();
-
-        List<String> values = datasource.getAllScenarios();
-
-        switch (view.getId()) {
-        case R.id.add:
-        	datasource.createScenario("bla");
-        	System.out.println(values);
-          break;
-        case R.id.delete:
-        	datasource.deleteScenario();
-          break;
-        }
-
-      }
+//    public void onClick(View view) {
+//    	Database_DAO datasource = new Database_DAO(this);
+//        datasource.open();
+//
+//        List<String> values = datasource.getAllScenarios();
+//
+//        switch (view.getId()) {
+//        case R.id.add:
+//        	datasource.createScenario("bla");
+//        	System.out.println(values);
+//        	refreshList();
+//          break;
+//        case R.id.delete:
+//        	datasource.deleteScenario();
+//        	refreshList();
+//          break;
+//        }
+//      }
 
     @Override
     protected void onDestroy() {
@@ -171,16 +149,7 @@ public class DemoActivity extends Activity  {
         	String newView = intent.getExtras().getString(EXTRA_VIEW);
             String newMessage = intent.getExtras().getString(EXTRA_MESSAGE);
             
-                if(newView != null)
-                {
-                	System.out.println("newView isset");
-                	System.out.println(newView.toString());
-                	if(newView.equals("error"))
-                	{
-                		System.out.println("newView isset");
-                		setContentView(R.layout.error);
-                	}
-                }
+            refreshList();
               
             mDisplay.append(newMessage + "\n");
         }
@@ -253,5 +222,26 @@ public class DemoActivity extends Activity  {
 	                mRegisterTask.execute(null, null, null);
 	            }
 	        }
+    }
+    
+    public void refreshList()
+    {
+    	Database_DAO datasource = new Database_DAO(this);
+        datasource.open();
+
+        List<String> values = datasource.getAllScenarios();
+        String[] strarray = values.toArray(new String[0]);
+            	
+    	ListView mainListView = (ListView) findViewById( R.id.list );
+
+		ArrayList<String> planetList = new ArrayList<String>();  
+		planetList.addAll( Arrays.asList(strarray) );  
+		
+		// Create ArrayAdapter using the planet list.  
+		listAdapter = new ArrayAdapter<String>(this, R.layout.simplerow, planetList);  
+
+			// Set the ArrayAdapter as the ListView's adapter.  
+		mainListView.setAdapter( listAdapter );      
+
     }
 }

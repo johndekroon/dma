@@ -28,10 +28,11 @@
 
     <LinearLayout
         android:id="@+id/group"
+        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" >
 
-        <Button
+        <!-- <Button
             android:id="@+id/add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -43,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Delete First" 
-            android:onClick="onClick"/>
+            android:onClick="onClick"/> -->
         
     </LinearLayout>
 
@@ -71,8 +72,5 @@
         android:scrollbars="vertical"
         android:text="@string/console"
         android:textColor="#00CC00" />
-    
-   
-
 
 </RelativeLayout>

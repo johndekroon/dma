@@ -86,6 +86,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 			datajson = new JSONObject(data);
 			String message= datajson.get("message").toString();  
 			String type= datajson.get("type").toString();
+			String monitor= datajson.get("monitor").toString();
 
 			System.out.println("type = "+type);
 	    	if(type.equals("WARNING")||type.equals("OK"))
@@ -129,24 +130,13 @@ public class GCMIntentService extends GCMBaseIntentService {
 	    		}
 	    		generateNotification(context, message);
 	    	}
-	    	else if(type.equals("register"))
+	    	else if(type.equals("REGISTER"))
 	    	{
-
-	    		
-	            SharedPreferences.Editor prefEditor = prefs.edit();
-	            prefEditor.putString("user", "");
-	            prefEditor.putString("pass", "");
-	            prefEditor.commit();
-	            
-//	    		//Retrieve the values
-//	    		Set<String> set = new HashSet<String>();
-//				set = ((SharedPreferences) prefEditor).getStringSet("monitors", null);
-//
-//	    		//Set the values
-//
-//	    		set.prefEditor.putStringSet("monitors", set);
-//	    		prefEditor.commit();
+	    		Database_DAO datasource = new Database_DAO(this);
+	            datasource.open();
+	        	datasource.createScenario(monitor);	            
 	    	}
+	    	
 	        System.out.println(intent.getStringExtra("message"));
 	    	Log.i(TAG, "Received message");
 	    	

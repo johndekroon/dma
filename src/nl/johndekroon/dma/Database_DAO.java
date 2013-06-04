@@ -19,8 +19,6 @@ public class Database_DAO {
 	 // Database fields
 	  private SQLiteDatabase database;
 	  private Database_helper dbHelper;
-	  private String[] allColumns = { Database_helper.COLUMN_ID,
-			  Database_helper.COLUMN_NAME,Database_helper.COLUMN_MUTE };
 	  
 	  public Database_DAO(Context context) {
 		    dbHelper = new Database_helper(context);
@@ -62,14 +60,5 @@ public class Database_DAO {
 		  open();
 		  database.execSQL(" DELETE FROM scenarios");
 		  close();
-		  }
-
-		  private Scenario cursorToScenario(Cursor cursor) {
-		    Scenario scenario = new Scenario();
-		    scenario.setId(cursor.getLong(0));
-		    scenario.setScenario(cursor.getString(1));
-		    return scenario;
-		  }
-		  
-		  
+		  }		  
 }

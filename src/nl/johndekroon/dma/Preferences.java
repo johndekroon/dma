@@ -7,11 +7,6 @@ import android.view.MenuItem;
 public class Preferences extends PreferenceActivity {
 
 	@Override
-	protected void onStart() {
-		super.onStart();
-	}
-
-	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);

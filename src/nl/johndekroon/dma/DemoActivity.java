@@ -45,16 +45,11 @@ public class DemoActivity extends Activity  {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-          
-        // Make sure the device has the proper dependencies
-        checkNotNull(SERVER_URL, "SERVER_URL");
-        checkNotNull(SENDER_ID, "SENDER_ID");
         
         GCMRegistrar.checkDevice(this);
         GCMRegistrar.checkManifest(this);
-        prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-    	final String regId = GCMRegistrar.getRegistrationId(this);
-
+    	
+        final String regId = GCMRegistrar.getRegistrationId(this);
         if (regId.equals("")) {
 	        	setContentView(R.layout.login);
         }
@@ -163,10 +158,10 @@ public class DemoActivity extends Activity  {
     	String password = passEditText.getText().toString();
     	
     	prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        SharedPreferences.Editor prefEditor = prefs.edit();
-        prefEditor.putString("user", username);
-        prefEditor.putString("pass", password);
-        prefEditor.commit();
+        prefs.edit()
+        	.putString("user", username)
+        	.putString("pass", password)
+        	.commit();
         
         setContentView(R.layout.activity_main);
         mDisplay = (TextView) findViewById(R.id.display);

@@ -27,8 +27,9 @@
     <string name="headings_home">Welcome to the Daemon</string>
     <string name="console">Console: \n</string>
     <string name="login_username">Username</string>
-    
     <string name="login_password">Password</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
     
 
 </resources>

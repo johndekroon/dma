@@ -18,10 +18,6 @@ package nl.johndekroon.dma;
 import static nl.johndekroon.dma.CommonUtilities.SENDER_ID;
 import static nl.johndekroon.dma.CommonUtilities.displayMessage;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -78,6 +74,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     @Override
     protected void onMessage(Context context, Intent intent) {
     	System.out.println("Got a message.");
+    	System.out.println(intent.getStringExtra("message"));
     	prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     	prefs.getBoolean("muteAll", false);
     	String data = intent.getStringExtra("message");
@@ -87,6 +84,8 @@ public class GCMIntentService extends GCMBaseIntentService {
 			String message= datajson.get("message").toString();  
 			String type= datajson.get("type").toString();
 			String monitor= datajson.get("monitor").toString();
+    		DatabaseDAO datasource = new DatabaseDAO(this);
+            datasource.open();
 
 			System.out.println("type = "+type);
 	    	if(type.equals("WARNING")||type.equals("OK"))
@@ -107,7 +106,9 @@ public class GCMIntentService extends GCMBaseIntentService {
 		    	         Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), alert);
 		    	         r.play();
 	    		}
+	    		datasource.updateScenario(monitor, type);
 	    		generateNotification(context, message);
+	    		
 	    	}
 	    	
 	    	else if(type.equals("ERROR"))
@@ -128,12 +129,11 @@ public class GCMIntentService extends GCMBaseIntentService {
 		    	         Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), alert);
 		    	         r.play();     
 	    		}
+	            datasource.updateScenario(monitor, type);
 	    		generateNotification(context, message);
 	    	}
 	    	else if(type.equals("REGISTER"))
 	    	{
-	    		Database_DAO datasource = new Database_DAO(this);
-	            datasource.open();
 	        	datasource.createScenario(monitor);	            
 	    	}
 	    	

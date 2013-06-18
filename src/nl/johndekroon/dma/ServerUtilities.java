@@ -15,7 +15,7 @@
  */
 package nl.johndekroon.dma;
 
-import static nl.johndekroon.dma.CommonUtilities.SERVER_URL;
+
 import static nl.johndekroon.dma.CommonUtilities.TAG;
 import static nl.johndekroon.dma.CommonUtilities.displayMessage;
 
@@ -23,6 +23,8 @@ import com.google.android.gcm.GCMRegistrar;
 import nl.johndekroon.dma.R;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.io.IOException;
@@ -41,6 +43,7 @@ import java.util.Random;
  */
 public final class ServerUtilities {
 
+	
     private static final int MAX_ATTEMPTS = 5;
     private static final int BACKOFF_MILLI_SECONDS = 2000;
     private static final Random random = new Random();
@@ -51,8 +54,11 @@ public final class ServerUtilities {
      * @return whether the registration succeeded or not.
      */
     static boolean register(final Context context, final String regId, final String user, final String pass) {
+    	SharedPreferences prefs;
+    	prefs = PreferenceManager.getDefaultSharedPreferences(context);
+	
     	Log.i(TAG, "registering device (regId = " + regId + ")");
-        String serverUrl = SERVER_URL + "/register";
+        String serverUrl = prefs.getString("server", "http://daemonmaster.johndekroon.nl/index.php/gcm/server") + "/register";
         Map<String, String> params = new HashMap<String, String>();
         params.put("regId", regId);
         params.put("username", user);
@@ -102,8 +108,10 @@ public final class ServerUtilities {
      * Unregister this account/device pair within the server.
      */
     static void unregister(final Context context, final String regId) {
+    	SharedPreferences prefs;
+    	prefs = PreferenceManager.getDefaultSharedPreferences(context);
         Log.i(TAG, "unregistering device (regId = " + regId + ")");
-        String serverUrl = SERVER_URL + "/unregister";
+        String serverUrl = prefs.getString("server", "http://daemonmaster.johndekroon.nl/index.php/gcm/server") + "/unregister";
         Map<String, String> params = new HashMap<String, String>();
         params.put("regId", regId);
         try {

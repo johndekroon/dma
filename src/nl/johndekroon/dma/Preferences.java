@@ -18,7 +18,9 @@ public class Preferences extends PreferenceActivity {
 		case android.R.id.home:
 			finish();
 			return true;
+		default:
+			return super.onOptionsItemSelected(item);
 		}
-		return super.onOptionsItemSelected(item);
+		
 	}
 }

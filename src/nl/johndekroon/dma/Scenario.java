@@ -25,9 +25,4 @@ public class Scenario {
 	  public String toString() {
 	    return scenario;
 	  }
-
-	public void add(Scenario scenario2) {
-		// TODO Auto-generated method stub
-		
-	}
 }

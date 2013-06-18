@@ -7,6 +7,11 @@
             android:key="muteAll"
             android:summary="Mute all messages"
             android:title="Mute all" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="showConsole"
+            android:summary="Show the console in the main view"
+            android:title="Show console" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Server Settings" >
         <EditTextPreference
@@ -20,7 +25,7 @@
    			android:summary="Your Daemon Master password"   
     		android:inputType="textPassword" />
         <EditTextPreference
-            android:defaultValue=""
+            android:defaultValue="http://daemonmaster.johndekroon.nl/index.php/gcm/server"
             android:key="server"
             android:summary="E.g. http://daemonmaster.example.com/server"
             android:title="Server address" />

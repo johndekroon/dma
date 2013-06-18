@@ -70,11 +70,13 @@ public class GCMIntentService extends GCMBaseIntentService {
             Log.i(TAG, "Ignoring unregister callback");
         }
     }
+    
+    /*
+    *	what to do on receiving the message. 
+    */
 
     @Override
     protected void onMessage(Context context, Intent intent) {
-    	System.out.println("Got a message.");
-    	System.out.println(intent.getStringExtra("message"));
     	prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     	prefs.getBoolean("muteAll", false);
     	String data = intent.getStringExtra("message");
@@ -86,9 +88,9 @@ public class GCMIntentService extends GCMBaseIntentService {
 			String monitor= datajson.get("monitor").toString();
     		DatabaseDAO datasource = new DatabaseDAO(this);
             datasource.open();
-
-			System.out.println("type = "+type);
-	    	if(type.equals("WARNING")||type.equals("OK"))
+            
+            //On getting a warning or an OK
+            if(type.equals("WARNING")||type.equals("OK"))
 	    	{
 	    		if(prefs.getBoolean("muteAll", false) != true)
 	    		{	
@@ -111,6 +113,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	    		
 	    	}
 	    	
+            //on receiving an error
 	    	else if(type.equals("ERROR"))
 	    	{
 	    		System.out.println("bbbrrrrrrr brrrrrr");
@@ -132,6 +135,8 @@ public class GCMIntentService extends GCMBaseIntentService {
 	            datasource.updateScenario(monitor, type);
 	    		generateNotification(context, message);
 	    	}
+            
+            //on register, make a new scenario.
 	    	else if(type.equals("REGISTER"))
 	    	{
 	        	datasource.createScenario(monitor);	            

@@ -36,7 +36,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-
 public class MainActivity extends Activity  {
 	
 	final int REGISTER_DEVICE = 1;
@@ -110,7 +109,10 @@ public class MainActivity extends Activity  {
         GCMRegistrar.onDestroy(this);
         super.onDestroy();
     }
-        
+    
+    /*
+    *	doLogin enables user to login on the DMS
+    */
     public void doLogin(View view)
     {
     	EditText userEditText = (EditText)findViewById(R.id.editText1);
@@ -132,6 +134,9 @@ public class MainActivity extends Activity  {
     	registerDevice();
     }
     
+    /*
+    *	doLogin enables user to logout on the DMS
+    */ 
     public void doLogout()
     {
     	prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -143,6 +148,9 @@ public class MainActivity extends Activity  {
     	setContentView(R.layout.login);
     }
     
+    /*
+    *	checks whether the device is registerd or not on the server. If not, register
+    */
     public void registerDevice()
     {
     	prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -162,6 +170,9 @@ public class MainActivity extends Activity  {
 	    }
     }
     
+    /*
+    *	This actually sends the post request. Thats why it's in the background
+    */
     public void registerInBackground()
     {
     	final String regId = GCMRegistrar.getRegistrationId(this);
@@ -183,6 +194,9 @@ public class MainActivity extends Activity  {
         mRegisterTask.execute(null, null, null);
     }
     
+    /*
+    *	Used to get the list with scenarios (and their statuses) from the local database
+    */
     public void refreshList()
     {
     	DatabaseDAO datasource = new DatabaseDAO(this);
@@ -203,12 +217,18 @@ public class MainActivity extends Activity  {
 		mainListView.setAdapter(listAdapter);      
     }
     
+    /*
+    *	switch the view to the preferences
+    */
     public void goToOptions()
     {
     	Intent settingsActivity = new Intent(getBaseContext(), Preferences.class);
 		startActivity(settingsActivity);
     }
     
+    /*
+    *	drawing the main screen. If not logged in, show login screen
+    */
     public void refreshScreen()
     {
     	final String regId = GCMRegistrar.getRegistrationId(this);
@@ -232,6 +252,9 @@ public class MainActivity extends Activity  {
         }
     }
 
+    /*
+    *	do fancy stuff when receiving a push notification
+    */
     private final BroadcastReceiver mHandleMessageReceiver = 
             new BroadcastReceiver() {
         @Override
